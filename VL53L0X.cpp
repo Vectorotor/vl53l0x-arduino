@@ -810,25 +810,34 @@ void VL53L0X::stopContinuous(void)
 // Returns a range reading in millimeters when continuous mode is active
 // (readRangeSingleMillimeters() also calls this function after starting a
 // single-shot range measurement)
-uint16_t VL53L0X::readRangeContinuousMillimeters(void)
+bool VL53L0X::readRangeContinuousMillimeters(uint16_t* result)
+
 {
-  startTimeout();
-  while ((readReg(RESULT_INTERRUPT_STATUS) & 0x07) == 0)
-  {
-    if (checkTimeoutExpired())
-    {
-      did_timeout = true;
-      return 65535;
-    }
-  }
 
-  // assumptions: Linearity Corrective Gain is 1000 (default);
-  // fractional ranging is not enabled
-  uint16_t range = readReg16Bit(RESULT_RANGE_STATUS + 10);
+	if ((readReg(RESULT_INTERRUPT_STATUS) & 0x07) == 0)
 
-  writeReg(SYSTEM_INTERRUPT_CLEAR, 0x01);
+	{
 
-  return range;
+		return false;
+
+	}
+
+
+
+	// assumptions: Linearity Corrective Gain is 1000 (default);
+
+	// fractional ranging is not enabled
+
+	*result = readReg16Bit(RESULT_RANGE_STATUS + 10);
+
+
+
+	writeReg(SYSTEM_INTERRUPT_CLEAR, 0x01);
+
+
+
+	return true;
+
 }
 
 // Performs a single-shot range measurement and returns the reading in
@@ -857,7 +866,10 @@ uint16_t VL53L0X::readRangeSingleMillimeters(void)
     }
   }
 
-  return readRangeContinuousMillimeters();
+
+  uint16_t result;
+  while (!readRangeContinuousMillimeters(&result));
+  return result;
 }
 
 // Did a timeout occur in one of the read functions since the last call to

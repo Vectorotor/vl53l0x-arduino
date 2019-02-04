@@ -124,7 +124,7 @@ class VL53L0X
 
     void startContinuous(uint32_t period_ms = 0);
     void stopContinuous(void);
-    uint16_t readRangeContinuousMillimeters(void);
+	bool readRangeContinuousMillimeters(uint16_t* result);
     uint16_t readRangeSingleMillimeters(void);
 
     inline void setTimeout(uint16_t timeout) { io_timeout = timeout; }
