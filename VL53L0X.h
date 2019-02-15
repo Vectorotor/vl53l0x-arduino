@@ -2,6 +2,7 @@
 #define VL53L0X_h
 
 #include <Arduino.h>
+#include <i2c_t3.h>
 
 class VL53L0X
 {
@@ -96,7 +97,7 @@ class VL53L0X
 
     uint8_t last_status; // status of last I2C transmission
 
-    VL53L0X(void);
+    VL53L0X(i2c_t3 * wireptr);
 
     void setAddress(uint8_t new_addr);
     inline uint8_t getAddress(void) { return address; }
@@ -135,6 +136,7 @@ class VL53L0X
     // TCC: Target CentreCheck
     // MSRC: Minimum Signal Rate Check
     // DSS: Dynamic Spad Selection
+	  i2c_t3 * wire;
 
     struct SequenceStepEnables
     {
